@@ -41,8 +41,15 @@ img{max-width:100%;display:block}a{color:inherit}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:12px}
 .hero-pts{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;font-size:14px;color:#cfd8e6;list-style:none;padding:0}
 .hero-pts li:before{content:"✓ ";color:var(--teal);font-weight:800}
-.hero-img{position:relative}
-.hero-img img{border-radius:22px;box-shadow:0 30px 70px rgba(0,0,0,.45);aspect-ratio:16/10;object-fit:cover;width:100%}
+.hero-img{position:relative;perspective:1200px;padding:10px 0 34px}
+.bus3d{position:relative;transform-style:preserve-3d;transform:rotateY(-12deg) rotateX(5deg);transition:transform .25s ease-out;will-change:transform}
+.bus3d .float{animation:float 5s ease-in-out infinite}
+.hero-img img{width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:22px;background:#0f2d55;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08);transform:translateZ(30px)}
+.glow{position:absolute;inset:8% 6%;background:radial-gradient(closest-side,rgba(0,194,168,.55),rgba(255,176,32,.25),transparent);filter:blur(40px);z-index:-1;transform:translateZ(-40px)}
+.ground{position:absolute;left:10%;right:10%;bottom:4px;height:28px;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);filter:blur(6px);animation:shadow 5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes shadow{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.88);opacity:.6}}
+@media(prefers-reduced-motion:reduce){.bus3d .float,.ground{animation:none}}
 .badge{position:absolute;left:-14px;bottom:-18px;background:#fff;color:#1d1d1f;border-radius:16px;padding:12px 16px;box-shadow:0 14px 40px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600}
 .badge b{display:block;font-size:18px;color:var(--teal-d)}
 .trust{background:#f5f5f7;padding:26px 0;border-bottom:1px solid #e5e5ea}
@@ -100,7 +107,18 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
 .sticky a{flex:1;padding:13px 6px;font-size:15px;border-radius:12px;white-space:nowrap;gap:5px}
 .sticky .btn-main{flex:1.6;box-shadow:none}
 .fab{position:fixed;right:20px;bottom:24px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 10px 26px rgba(0,0,0,.25);font-size:28px;text-decoration:none}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(5,15,30,.65);backdrop-filter:blur(4px)}
+.modal.open{display:flex;animation:fade .2s}
+.modal-box{position:relative;width:100%;max-width:520px;max-height:calc(100vh - 32px);overflow:auto;border-radius:22px;animation:pop .25s}
+.modal-box form.af{box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.mclose{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:0;background:#f2f2f7;font-size:22px;cursor:pointer;z-index:2;line-height:1}
+.thanks{display:none;background:#fff;border-radius:22px;padding:40px 26px;text-align:center}
+.thanks .tk{font-size:56px}.thanks h3{font-size:24px;margin:10px 0}.thanks p{color:#515154;line-height:1.5}
+body.mopen{overflow:hidden}
+@keyframes fade{from{opacity:0}}@keyframes pop{from{transform:translateY(24px) scale(.97);opacity:0}}
+@media(max-width:560px){.modal{align-items:flex-end;padding:0}.modal-box{max-width:none;max-height:92vh;border-radius:22px 22px 0 0}.modal-box form.af,.thanks{border-radius:22px 22px 0 0}}
 @media(max-width:900px){
+ .bus3d{transform:rotateY(-8deg) rotateX(4deg)}
  .au-nav nav{display:none}
  .hero{padding:32px 0 48px}.hero .au-wrap,.get,.book .au-wrap{grid-template-columns:1fr;gap:30px}
  .grid3,.steps{grid-template-columns:1fr 1fr}
@@ -119,7 +137,7 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
 <header class="au-nav"><div class="au-wrap">
  <a class="au-logo" href="https://www.satcop.com/">Sat<span>cop</span></a>
  <nav aria-label="Primary"><a href="#check">What we check</a><a href="#how">How it works</a><a href="#report">Your report</a><a href="#faq">FAQ</a></nav>
- <a class="btn btn-main btn-sm" href="#book" data-cta="nav">Book Free Audit</a>
+ <a class="btn btn-main btn-sm" href="#book" data-open-form data-cta="nav">Book Free Audit</a>
 </div></header>
 <main>
 <section class="hero"><div class="au-wrap">
@@ -128,13 +146,14 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
   <h1>Free School Bus Safety Audit <em>for Your School</em></h1>
   <p class="lead">Find the gaps in your school transport before parents do. Our team checks your buses, routes and safety systems, then gives you a clear written report at no cost.</p>
   <div class="hero-ctas">
-   <a class="btn btn-main" href="#book" data-cta="hero">Book My Free Audit →</a>
+   <a class="btn btn-main" href="#book" data-open-form data-cta="hero">Book My Free Audit →</a>
    <a class="btn btn-ghost" href="https://wa.me/919156088090?text=Hi%20Satcop%2C%20I%20want%20to%20book%20a%20free%20school%20bus%20safety%20audit" target="_blank" rel="noopener" data-cta="hero-wa">💬 WhatsApp us</a>
   </div>
   <ul class="hero-pts"><li>Written report</li><li>Quick fixes list</li><li>Works with vendor buses</li></ul>
  </div>
  <div class="hero-img">
-  <img src="assets/bus.webp" width="1280" height="720" alt="School bus parked outside a school, ready for a safety audit" fetchpriority="high"/>
+  <div class="bus3d" id="bus3d"><div class="glow"></div><div class="float"><img src="assets/bus.webp" width="1280" height="720" alt="Yellow school bus, ready for a safety audit" fetchpriority="high"/></div></div>
+  <div class="ground"></div>
   <div class="badge">🛡️<div><b>6-point check</b>GPS · CCTV · RFID · SOS</div></div>
  </div>
 </div></section>
@@ -177,7 +196,7 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
    <li>Practical advice on school bus safety best practice</li>
    <li>No obligation to buy anything</li>
   </ul>
-  <a class="btn btn-main" href="#book" data-cta="report">Book My Free Audit →</a>
+  <a class="btn btn-main" href="#book" data-open-form data-cta="report">Book My Free Audit →</a>
  </div>
  <div>
   <div class="report" aria-label="Sample audit report (illustration)">
@@ -204,28 +223,7 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
    <a class="btn btn-wa" href="https://wa.me/919156088090?text=Hi%20Satcop%2C%20I%20want%20to%20book%20a%20free%20school%20bus%20safety%20audit" target="_blank" rel="noopener" data-cta="book-wa">💬 WhatsApp</a>
   </div>
  </div>
- <form class="af" id="audit-form" action="https://www.satcop.com/lead-submit.php" method="post" target="af-sink" data-satcop-form="free-audit" novalidate>
-  <h3>Book My Free Audit</h3>
-  <p class="muted">Takes 30 seconds. No obligation.</p>
-  <input type="hidden" name="service" value="Free School Bus Safety Audit"/>
-  <input type="hidden" name="source_page" value="free-audit"/>
-  <input type="hidden" name="source" value="free-audit"/>
-  <input type="hidden" name="form_id" value="free-audit-form"/>
-  <input type="hidden" name="page_url" value=""/>
-  <input type="hidden" name="message" value=""/>
-  <div style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="af-website">Website</label><input id="af-website" name="website" type="text" tabindex="-1" autocomplete="off"/></div>
-  <label for="af-school">School name</label><input id="af-school" name="school_name" required placeholder="e.g. Sunrise Public School"/>
-  <div class="r2">
-   <div><label for="af-city">City</label><input id="af-city" name="city" required placeholder="e.g. Pune"/></div>
-   <div><label for="af-bus">Number of buses</label><input id="af-bus" name="bus_count" inputmode="numeric" maxlength="5" placeholder="e.g. 12"/></div>
-  </div>
-  <label for="af-name">Contact person</label><input id="af-name" name="name" required autocomplete="name" placeholder="Your name"/>
-  <label for="af-phone">Phone</label><input id="af-phone" name="phone" type="tel" inputmode="tel" maxlength="16" required autocomplete="tel" placeholder="10-digit mobile"/>
-  <button class="btn btn-main" type="submit">Book My Free Audit →</button>
-  <p class="status" role="status" aria-live="polite" hidden></p>
-  <p class="fine">We use your details only to contact you about the audit.</p>
- </form>
- <iframe name="af-sink" title="form" style="display:none"></iframe>
+ <div style="align-self:center;text-align:center"><a class="btn btn-main" href="#book" data-open-form data-cta="book-section">Book My Free Audit →</a></div>
 </div></section>
 
 <section class="sec alt" id="faq"><div class="au-wrap">
@@ -244,7 +242,7 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
 <section class="final"><div class="au-wrap">
  <h2>Is your school bus really safe?</h2>
  <p class="sub">Find out with a free, no-obligation safety audit.</p>
- <a class="btn btn-main" href="#book" data-cta="final">Book My Free Audit →</a>
+ <a class="btn btn-main" href="#book" data-open-form data-cta="final">Book My Free Audit →</a>
 </div></section>
 </main>
 <footer class="au-foot"><div class="au-wrap">
@@ -254,31 +252,80 @@ form.af{background:#fff;color:#1d1d1f;border-radius:22px;padding:26px;box-shadow
  <div style="margin-top:10px"><a href="https://www.satcop.com/school-bus-tracking-solution/">School bus tracking</a> · <a href="https://www.satcop.com/school-bus-cctv-camera/">School bus CCTV</a> · <a href="https://www.satcop.com/rfid-attendance-system-school/">RFID attendance</a> · <a href="https://www.satcop.com/privacy-policy/">Privacy policy</a></div>
  <div style="margin-top:10px">Copyright © Satcop India Pvt. Ltd.</div>
 </div></footer>
+<div class="modal" id="af-modal" role="dialog" aria-modal="true" aria-labelledby="af-title" aria-hidden="true">
+ <div class="modal-box">
+  <button class="mclose" type="button" aria-label="Close" data-close>×</button>
+ <form class="af" id="audit-form" action="https://www.satcop.com/lead-submit.php" method="post" target="af-sink" data-satcop-form="free-audit" novalidate>
+  <h3 id="af-title">Book My Free Audit</h3>
+  <p class="muted">Takes 30 seconds. No obligation.</p>
+  <input type="hidden" name="service" value="Free School Bus Safety Audit"/>
+  <input type="hidden" name="source_page" value="free-audit"/>
+  <input type="hidden" name="source" value="free-audit"/>
+  <input type="hidden" name="form_id" value="free-audit-form"/>
+  <input type="hidden" name="page_url" value=""/>
+  <input type="hidden" name="message" value=""/>
+  <div style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="af-website">Website</label><input id="af-website" name="website" type="text" tabindex="-1" autocomplete="off"/></div>
+  <label for="af-name">Name</label><input id="af-name" name="name" required autocomplete="name" placeholder="Your name"/>
+  <label for="af-email">Email</label><input id="af-email" name="email" type="email" required autocomplete="email" placeholder="you@school.edu.in"/>
+  <label for="af-phone">Mobile Number</label><input id="af-phone" name="phone" type="tel" inputmode="tel" maxlength="16" required autocomplete="tel" placeholder="10-digit mobile"/>
+  <div class="r2">
+   <div><label for="af-city">City</label><input id="af-city" name="city" required placeholder="e.g. Pune"/></div>
+   <div><label for="af-bus">Buses (optional)</label><input id="af-bus" name="bus_count" inputmode="numeric" maxlength="5" placeholder="e.g. 12"/></div>
+  </div>
+  <label for="af-school">School Name</label><input id="af-school" name="school_name" required placeholder="e.g. Sunrise Public School"/>
+  <label for="af-contact">Contact Person</label><input id="af-contact" name="contact_person" required placeholder="Principal / transport head"/>
+  <button class="btn btn-main" type="submit">Book My Free Audit →</button>
+  <p class="status" role="status" aria-live="polite" hidden></p>
+  <p class="fine">We use your details only to contact you about the audit.</p>
+ </form>
+<iframe name="af-sink" title="form" style="display:none"></iframe>
+  <div class="thanks" id="af-thanks"><div class="tk">✅</div><h3>Thank you!</h3><p>We have received your request. Our team will call you soon to plan your free school bus safety audit.</p><a class="btn btn-wa" href="https://wa.me/919156088090?text=Hi%20Satcop%2C%20I%20just%20booked%20a%20free%20school%20bus%20safety%20audit" target="_blank" rel="noopener" data-cta="thanks-wa">💬 WhatsApp us</a><p><button class="btn btn-call btn-sm" type="button" data-close>Close</button></p></div>
+ </div>
+</div>
 <div class="sticky" aria-label="Quick actions">
  <a class="btn btn-call" href="tel:+918600002222" data-cta="sticky-call">📞 Call</a>
  <a class="btn btn-wa" href="https://wa.me/919156088090?text=Hi%20Satcop%2C%20I%20want%20to%20book%20a%20free%20school%20bus%20safety%20audit" target="_blank" rel="noopener" data-cta="sticky-wa">💬 WhatsApp</a>
- <a class="btn btn-main" href="#book" data-cta="sticky-book">Book Free Audit</a>
+ <a class="btn btn-main" href="#book" data-open-form data-cta="sticky-book">Book Free Audit</a>
 </div>
 <a class="fab" href="https://wa.me/919156088090?text=Hi%20Satcop%2C%20I%20want%20to%20book%20a%20free%20school%20bus%20safety%20audit" target="_blank" rel="noopener" aria-label="WhatsApp us" data-cta="fab-wa">💬</a>
 <script>
 (function(){
- var f=document.getElementById('audit-form'),st=f.querySelector('.status'),sent=false;
- document.querySelectorAll('[data-cta]').forEach(function(a){a.addEventListener('click',function(){gtag('event',/wa\.me/.test(a.href)?'whatsapp_click':/^tel:/.test(a.href)?'call_click':'cta_click',{cta:a.getAttribute('data-cta'),page:'free-audit'});});});
+ var M=document.getElementById('af-modal'),f=document.getElementById('audit-form'),tk=document.getElementById('af-thanks'),st=f.querySelector('.status'),sent=false,last;
+ function openM(e){if(e)e.preventDefault();last=document.activeElement;f.style.display='';tk.style.display='none';st.hidden=true;M.classList.add('open');M.setAttribute('aria-hidden','false');document.body.classList.add('mopen');setTimeout(function(){f.name.focus({preventScroll:true})},60);gtag('event','form_open',{form_id:'free-audit-form'});}
+ function closeM(){M.classList.remove('open');M.setAttribute('aria-hidden','true');document.body.classList.remove('mopen');if(last)last.focus({preventScroll:true});}
+ window.openAuditForm=openM;
+ document.querySelectorAll('[data-open-form]').forEach(function(a){a.addEventListener('click',openM);});
+ M.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',closeM);});
+ M.addEventListener('click',function(e){if(e.target===M)closeM();});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&M.classList.contains('open'))closeM();});
+ document.querySelectorAll('[data-cta]').forEach(function(a){a.addEventListener('click',function(){gtag('event',/wa\.me/.test(a.href||'')?'whatsapp_click':/^tel:/.test(a.href||'')?'call_click':'cta_click',{cta:a.getAttribute('data-cta'),page:'free-audit'});});});
  function say(t,c){st.hidden=false;st.textContent=t;st.style.color=c||'#1d1d1f';}
+ function bad(e,el,t){e.preventDefault();say(t,'#b42318');el.focus();}
+ function done(){f.style.display='none';tk.style.display='block';f.reset();}
  f.addEventListener('submit',function(e){
-  if(f.website.value){e.preventDefault();say('Thank you! Our team will call you back shortly.','#0a7a3e');return;}
+  if(f.website.value){e.preventDefault();done();return;}
   var p=f.phone.value.replace(/\D/g,'').replace(/^(91|0)(?=\d{10}$)/,'');
-  if(f.school_name.value.trim().length<2){e.preventDefault();say('Please enter your school name.','#b42318');f.school_name.focus();return;}
-  if(!f.city.value.trim()){e.preventDefault();say('Please enter your city.','#b42318');f.city.focus();return;}
-  if(f.name.value.trim().length<2){e.preventDefault();say('Please enter the contact person\'s name.','#b42318');f.name.focus();return;}
-  if(!/^[6-9]\d{9}$/.test(p)){e.preventDefault();say('Please enter a 10-digit Indian mobile number.','#b42318');f.phone.focus();return;}
-  f.page_url.value=location.href;
-  f.message.value='FREE AUDIT REQUEST | School: '+f.school_name.value.trim()+' | Buses: '+(f.bus_count.value||'-')+' | Source: free-audit';
+  if(f.name.value.trim().length<2)return bad(e,f.name,'Please enter your name.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.value.trim()))return bad(e,f.email,'Please enter a valid email address.');
+  if(!/^[6-9]\d{9}$/.test(p))return bad(e,f.phone,'Please enter a valid 10-digit Indian mobile number.');
+  if(!f.city.value.trim())return bad(e,f.city,'Please enter your city.');
+  if(f.school_name.value.trim().length<2)return bad(e,f.school_name,'Please enter your school name.');
+  if(f.contact_person.value.trim().length<2)return bad(e,f.contact_person,'Please enter the contact person.');
+  f.phone.value=p;f.page_url.value=location.href;
+  f.message.value='FREE AUDIT REQUEST | School: '+f.school_name.value.trim()+' | Contact person: '+f.contact_person.value.trim()+' | Email: '+f.email.value.trim()+' | Buses: '+(f.bus_count.value||'-')+' | Source: free-audit';
   sent=true;say('Sending…');
   gtag('event','generate_lead',{form_id:'free-audit-form',lead_source:'free-audit',city:f.city.value.trim(),bus_count:f.bus_count.value||''});
   gtag('event','free_audit_form_submit',{form_id:'free-audit-form'});
  });
- document.querySelector('iframe[name=af-sink]').addEventListener('load',function(){if(sent){say('Thank you! We have received your request. Our team will call you to plan your free audit.','#0a7a3e');f.reset();sent=false;}});
+ document.querySelector('iframe[name=af-sink]').addEventListener('load',function(){if(sent){sent=false;done();}});
+ /* parallax */
+ var b=document.getElementById('bus3d'),mq=matchMedia('(prefers-reduced-motion:reduce)');
+ if(b&&!mq.matches){var base=innerWidth>900?[-12,5]:[-8,4],mx=0,my=0,sy=0,raf;
+  function upd(){raf=0;b.style.transform='rotateY('+(base[0]+mx*10)+'deg) rotateX('+(base[1]-my*8+sy)+'deg)';}
+  function q(){if(!raf)raf=requestAnimationFrame(upd);}
+  document.querySelector('.hero').addEventListener('mousemove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;q();});
+  addEventListener('scroll',function(){sy=Math.min(scrollY,600)/60;q();},{passive:true});}
+ if(location.hash==='#book')openM();
 })();
 </script>
 </body>
